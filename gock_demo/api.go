@@ -38,3 +38,30 @@ func GetResultByAPI(x, y int) int {
 	// 对API返回的数据做一些逻辑处理
 	return ret.Value + y
 }
+
+type APIClient struct {
+	http.Client
+}
+
+func (a *APIClient)GetResultByAPI(x, y int) int {
+	p := &ReqParam{X: x}
+	b, _ := json.Marshal(p)
+	// 调用其他服务的API
+	resp, err := a.Post(
+		"http://your-api.com/post",
+		"application/json",
+		bytes.NewBuffer(b),
+	)
+	if err != nil {
+		return -1
+	}
+	body, _ := ioutil.ReadAll(resp.Body)
+	var ret Result
+	if err := json.Unmarshal(body, &ret); err != nil {
+		return -1
+	}
+	// 对API返回的数据做一些逻辑处理
+	return ret.Value + y
+}
+
+
